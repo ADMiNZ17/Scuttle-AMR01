@@ -1,0 +1,6 @@
+# Setup required udev rules on scuttle
+# sudo udevadm control --reload-rules && sudo udevadm trigger
+# YDLIDAR Udev
+KERNEL=="ttyUSB[0-9]", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0777", SYMLINK+="ydlidar"
+# i2c-tiny-usb
+KERNEL=="i2c-[0-99]", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="c631", MODE:="0777"

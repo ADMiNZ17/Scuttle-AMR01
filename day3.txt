@@ -1,0 +1,154 @@
+Day 3
+-------------------------------------
+1. 3D mapping – RTAB-Map ​
+-------------------------------------
+
+ros2 run rtabmap_slam rtabmap --ros-args -r odom:=odom/amr -r rgb/image:=camera/color/image_raw -r depth/image:=camera/aligned_depth_to_color/image_raw -r rgb/camera_info:=camera/color/camera_info -r odom:=odom/amr -r /tf:=tf -r /tf_static:=tf_static -r __ns:=/amr33
+
+-------------------------------------
+# Start RVIZ2
+-------------------------------------
+
+rviz2 --ros-args -r __ns:=/amr33 -r /tf:=tf -r /tf_static:=tf_static -r /clicked_point:=clicked_point -r /goal_pose:=goal_pose -r /initialpose:=initialpose
+
+-------------------------------------
+2. FastMapping
+-------------------------------------
+
+ros2 run fast_mapping fast_mapping_node --ros-args -r /camera/aligned_depth_to_color/camera_info:=camera/aligned_depth_to_color/camera_info -r /camera/aligned_depth_to_color/image_raw:=camera/aligned_depth_to_color/image_raw -r /camera_left/aligned_depth_to_color/image_raw:=camera_left/aligned_depth_to_color/image_raw -r /camera_rear/aligned_depth_to_color/image_raw:=camera_rear/aligned_depth_to_color/image_raw -r /camera_right/aligned_depth_to_color/image_raw:=camera_right/aligned_depth_to_color/image_raw -r /tf:=tf -r /tf_static:=tf_static -r /world/fused_map:=world/fused_map -r /world/map:=world/map -r /world/occupancy:=world/occupancy -r __ns:=/amr33
+
+​-------------------------------------
+3. Object Detection​
+-------------------------------------
+# Install python packages
+-------------------------------------
+
+python3 -m pip install numpy pandas openvino-dev nncf onnx​
+python3 -m pip install ultralytics==8.0.43​
+python3 -m pip install openvino-dev==2023.2​
+
+-------------------------------------
+# Create workspace directory
+-------------------------------------
+
+mkdir -p ~/workspace/robofun-1.0/object-detection-ws/src​
+
+-------------------------------------
+# Create ROS2 package
+-------------------------------------
+
+source /opt/ros/humble/setup.bash​
+cd ~/workspace/robofun-1.0/object-detection-ws/src​
+ros2 pkg create --build-type ament_python object_detection​
+
+-------------------------------------
+# Create file
+-------------------------------------
+
+gedit ~/workspace/robofun-1.0/object-detection-ws/src/object_detection/object_detection/object_detection_node.py ​
+
+-------------------------------------
+
+entry_points={​
+        'console_scripts': [​
+            'object_detection_node = object_detection.object_detection_node:main'​
+        ],​
+    },
+
+-------------------------------------
+# Create a ROS2 package
+-------------------------------------
+
+source /opt/ros/humble/setup.bash​
+cd ~/workspace/robofun-1.0/object-detection-ws/src​
+ros2 pkg create --build-type ament_cmake object_detection_msgs​
+
+-------------------------------------
+# Create a msg folder
+-------------------------------------
+
+mkdir -p ~/workspace/robofun-1.0/object-detection-ws/src/object_detection_msgs/msg
+
+-------------------------------------
+# Create Object.msg​
+-------------------------------------
+
+gedit ~/workspace/robofun-1.0/object-detection-ws/src/object_detection_msgs/msg/Object.msg​​
+
+-------------------------------------
+
+int16 class_id          # class id ​
+int16 id                # track id ​
+string label            # object class ​
+float32 confidence      # confidence of result ​
+
+float32 x               # normalized value of box top-left point coordinate x ​
+float32 y               # normalized value of box top-left point coordinate y ​
+float32 height          # normalized value of box height ​
+float32 width           # normalized value of box width ​
+
+float32 vel_x           # normalized velocity of box top-left point coordinate x ​
+float32 vel_y           # normalized velocity of box top-left point coordinate y
+
+-------------------------------------
+# Create Objects.msg
+-------------------------------------
+
+gedit ~/workspace/robofun-1.0/object-detection-ws/src/object_detection_msgs/msg/Objects.msg
+
+-------------------------------------
+
+std_msgs/Header header ​
+Object[] objects​
+
+-------------------------------------
+# Add lines in CMakeLists.txt​cd ~/workspace/robofun-1.0/object-detection-ws​
+source install/setup.bash​
+export ROS_DOMAIN_ID=<ROBOT_DOMAIN_ID>​
+ros2 run object_detection object_detection_node --ros-args -r __ns:=/<robot_ns>
+-------------------------------------
+
+gedit ~/workspace/robofun-1.0/object-detection-ws/src/object_detection_msgs/CMakeLists.txt​
+
+-------------------------------------
+
+find_package(rosidl_default_generators REQUIRED) ​
+find_package(std_msgs REQUIRED) 
+
+-------------------------------------
+
+rosidl_generate_interfaces(${PROJECT_NAME} ​
+  "msg/Object.msg" ​
+  "msg/Objects.msg" ​
+  DEPENDENCIES std_msgs
+) 
+
+-------------------------------------
+# Open package.xml file
+-------------------------------------
+
+gedit ~/workspace/robofun-1.0/object-detection-ws/src/object_detection_msgs/package.xml​
+
+-------------------------------------
+
+<depend>std_msgs</depend> ​
+<buildtool_depend>rosidl_default_generators</buildtool_depend> ​
+<member_of_group>rosidl_interface_packages</member_of_group> 
+
+-------------------------------------
+# Compile the application
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/object-detection-ws​
+colcon build --symlink-install​
+
+-------------------------------------
+# Run OpenVINO application
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/object-detection-ws​
+source install/setup.bash​
+export ROS_DOMAIN_ID=<ROBOT_DOMAIN_ID>​
+ros2 run object_detection object_detection_node --ros-args -r __ns:=/<robot_ns>
+
+​-------------------------------------

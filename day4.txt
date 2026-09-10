@@ -1,0 +1,213 @@
+Day 4
+-------------------------------------
+1. Node-RED Visualization
+-------------------------------------
+
+sudo apt update​
+
+-------------------------------------
+# Install nodejs
+-------------------------------------
+
+cd ~/workspace​
+curl -sL https://deb.nodesource.com/setup_18.x | sudo bash - ​
+sudo apt install -y nodejs mosquitto
+
+-------------------------------------
+# If nodejs installation error
+sudo dpkg -i --force-overwrite /var/cache/apt/archives/nodejs_18.20.8-1nodesource1_amd64.deb
+-------------------------------------
+
+sudo systemctl status mosquitto​
+​
+-------------------------------------
+
+sudo systemctl stop mosquitto # stop mosquitto service​
+sudo systemctl start mosquitto # start mosquitto service​
+sudo systemctl restart mosquitto # restart mosquitto service​
+
+-------------------------------------
+# Install python packages
+-------------------------------------
+
+pip3 install pybase64 paho-mqtt numpy​
+
+-------------------------------------
+# Install node-red package
+-------------------------------------
+
+sudo npm install -g --unsafe-perm node-red ​
+
+# IF RETURN ERROR TRY NEWER VERSION:
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+#CHECK CURRENT VERSION:
+node -v
+
+# RERUN THE INSTALLATION:
+sudo npm install -g --unsafe-perm node-red
+
+-------------------------------------
+
+node-red
+
+-------------------------------------
+# Change directory to /src
+-------------------------------------
+
+source /opt/ros/humble/setup.bash​
+cd ~/workspace/robofun-1.0/object-detection-ws/src​
+
+-------------------------------------
+# Create new ROS package
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/object-detection-ws/src
+ros2 pkg create --build-type ament_python scuttle_mqtt 
+
+-------------------------------------
+# ​Copy the script from the image_publisher.txt
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/object-detection-ws/src/scuttle_mqtt/scuttle_mqtt ​
+gedit image_publisher.py
+
+-------------------------------------
+# Modify setup.py
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/object-detection-ws/src/scuttle_mqtt/​
+gedit setup.py
+
+-------------------------------------
+
+'mqtt_image_publisher = scuttle_mqtt.image_publisher:main' ​
+
+​​-------------------------------------
+# Build package
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/object-detection-ws/​
+source /opt/ros/humble/setup.bash ​
+colcon build​
+
+-------------------------------------
+
+source install/setup.bash​
+
+-------------------------------------
+# Run mqtt middleware node
+-------------------------------------
+
+source /opt/ros/humble/setup.bash​
+export ROS_DOMAIN_ID=<ROBOT_DOMAIN_ID>​
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp​
+ros2 run scuttle_mqtt mqtt_image_publisher -r __ns:=/<robot_ns>​
+
+-------------------------------------
+
+var image = global.get('image') || 0;​
+global.set('image',msg.payload);​
+
+-------------------------------------
+
+<!DOCTYPE html>​
+<html>​
+<style>​
+    .img {​
+        border: 8px solid #000;​
+        width: 100%;​
+        height: 100%;​
+    }​
+</style>​
+<center>​
+    <table style="width:100%">​
+        <tr style="text-align:center">​
+            <td>​
+                <img src="data:image/jpg;base64,{{msg.payload.image}}" class=img/>​
+            </td>​
+        <tr style="text-align:center">​
+            <td>​
+                <h3>Number of detected objects: {{msg.payload.numObjects}} </h2>​
+            </td>​
+        </tr>​
+        <tr style="text-align:center">​
+            <td>​
+
+            </td>​
+        </tr>​
+    </table>​
+</center>​
+</html>
+
+-------------------------------------
+
+var object = msg.payload; ​
+var imgJson = {}; ​
+
+for (var label in object){ ​
+    var imgArr = []; ​
+    for (let index = 0; index < object[label].length; index++) { ​
+        var element = object[label][index].slice(2,-1); ​
+        imgArr.push(element); ​
+    } ​
+    imgJson[label] = imgArr; ​
+} ​
+
+global.set('imgJson', imgJson); ​
+ ​
+var newMsg = {payload: element}; ​
+return newMsg; 
+
+-------------------------------------
+
+var imgJson = global.get('imgJson') || 0; ​
+
+for (var label in imgJson){ ​
+    var imgArr = imgJson[label]; ​
+    for (let idx = 0; idx < imgArr.length; idx++) { ​
+        var msg = { payload: imgArr[idx], filename: "./images/" + label + "_" + idx.toString() + '.png'}; ​
+        node.send(msg); ​
+    } ​
+}
+
+-------------------------------------
+2. ROSboard
+-------------------------------------
+# Install python packages
+-------------------------------------
+
+sudo pip3 install tornado​
+sudo pip3 install simplejpeg ​
+
+-------------------------------------
+# Clone ROSboard
+-------------------------------------
+
+cd ~/workspace​
+git clone https://github.com/dheera/rosboard.git​
+
+-------------------------------------
+
+source /opt/ros/humble/setup.bash​
+
+-------------------------------------
+# Build ROS package
+-------------------------------------
+
+cd ~/workspace/rosboard​
+colcon build​
+source install/setup.bash
+
+-------------------------------------
+# Run ROSBoard
+-------------------------------------
+
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp​
+export ROS_DOMAIN_ID=<ROBOT_DOMAIN_ID>​
+ros2 run rosboard rosboard_node​
+
+-------------------------------------
+
+

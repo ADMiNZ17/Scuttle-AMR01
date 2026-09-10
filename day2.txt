@@ -1,0 +1,114 @@
+Day 2 
+-------------------------------------
+1. Sensors
+-------------------------------------
+# Install realsense viewer
+-------------------------------------
+
+sudo apt install -y ros-humble-realsense2-tutorial-demo​
+source /opt/ros/humble/setup.bash​
+LIBREALSENSE_VER=2.54.2-0~realsense.10773​
+sudo apt install -y librealsense2=$LIBREALSENSE_VER librealsense2-gl=$LIBREALSENSE_VER​
+sudo apt install --allow-downgrades -y librealsense2-dkms librealsense2-utils=$LIBREALSENSE_VER librealsense2-udev-rules=$LIBREALSENSE_VER
+
+-------------------------------------
+# Start realsense viewer
+--------------------------------------
+
+realsense-viewer​
+
+-------------------------------------
+2. Simultaneous Localization and Mapping (SLAM) ON LIDAR
+-------------------------------------
+
+ros2 run cartographer_ros cartographer_node -configuration_directory /home/amr01/workspace/robofun-1.0/platform/scuttle/ROS2/src/generic_robot_driver/config -configuration_basename cartographer.lua --ros-args -p use_sim_time:=false -r odom:=odom/amr -r /constraint_list:=constraint_list -r /parameter_events:=parameter_events -r /rosout:=rosout -r /scan:=scan -r /scan_matched_points2:=scan_matched_points2 -r /submap_list:=submap_list -r /tf:=tf -r /tf_static:=tf_static -r /trajectory_node_list:=trajectory_node_list -r __ns:=/amr01
+
+-------------------------------------
+
+ros2 run cartographer_ros cartographer_occupancy_grid_node -resolution 0.05 -publish_period_sec 1.0 --ros-args -p use_sim_time:=false -r /map:=map -r /submap_list:=submap_list -r __ns:=/amr01 
+
+-------------------------------------
+# Start RVIZ2​
+-------------------------------------
+
+rviz2 --ros-args -r __ns:=/amr01 -r /tf:=tf -r /tf_static:=tf_static -r /clicked_point:=clicked_point -r /goal_pose:=goal_pose -r /initialpose:=initialpose​
+
+-------------------------------------
+# Save map
+-------------------------------------
+
+ros2 run nav2_map_server map_saver_cli -f /home/$USER/workspace/robofun-1.0/my_map --ros-args -p free_thresh_default:=0.196 -r /map:=map -r __ns:=/amr33​
+​​
+-------------------------------------
+3. Localization & Navigation​ START
+-------------------------------------
+# Start RVIZ2
+-------------------------------------
+
+rviz2 --ros-args -r __ns:=/amr01 -r /tf:=tf -r /tf_static:=tf_static -r /clicked_point:=clicked_point -r /goal_pose:=goal_pose -r /initialpose:=initialpose
+
+-------------------------------------
+# Edit Nav2 config file
+-------------------------------------
+
+gedit ~/workspace/robofun-1.0/platform/scuttle/ROS2/src/generic_robot_driver/config/nav2_eiforamr_params.yml
+
+nav2_amcl::DifferentialMotionModel
+
+-------------------------------------
+# New bt_navigator 
+-------------------------------------
+
+bt_navigator:
+  ros__parameters:
+    use_sim_time: False
+    global_frame: map
+    robot_base_frame: base_link
+    odom_topic: odom/amr
+    bt_loop_duration: 10
+    default_server_timeout: 20
+    # 'default_nav_through_poses_bt_xml' and 'default_nav_to_pose_bt_xml' are use defaults:
+    # nav2_bt_navigator/navigate_to_pose_w_replanning_and_recovery.xml
+    # nav2_bt_navigator/navigate_through_poses_w_replanning_and_recovery.xml
+    # They can be set here or via a RewrittenYaml remap from a parent launch file to Nav2.
+    plugin_lib_names:
+    - nav2_compute_path_to_pose_action_bt_node
+    - nav2_compute_path_through_poses_action_bt_node
+    - nav2_follow_path_action_bt_node
+    - nav2_back_up_action_bt_node
+    - nav2_spin_action_bt_node
+    - nav2_wait_action_bt_node
+    - nav2_clear_costmap_service_bt_node
+    - nav2_is_stuck_condition_bt_node
+    - nav2_goal_reached_condition_bt_node
+    - nav2_goal_updated_condition_bt_node
+    - nav2_initial_pose_received_condition_bt_node
+    - nav2_reinitialize_global_localization_service_bt_node
+    - nav2_rate_controller_bt_node
+    - nav2_distance_controller_bt_node
+    - nav2_speed_controller_bt_node
+    - nav2_truncate_path_action_bt_node
+    - nav2_goal_updater_node_bt_node
+    - nav2_recovery_node_bt_node
+    - nav2_pipeline_sequence_bt_node
+    - nav2_round_robin_node_bt_node
+    - nav2_transform_available_condition_bt_node
+    - nav2_time_expired_condition_bt_node
+    - nav2_distance_traveled_condition_bt_noderos2 run nav2_map_server map_saver_cli -f /home/$USER/workspace/robofun-1.0/my_map --ros-args -p free_thresh_default:=0.196 -r /map:=map -r __ns:=/amr33​
+    - nav2_single_trigger_bt_node
+    - nav2_is_battery_low_condition_bt_node
+    - nav2_navigate_through_poses_action_bt_node
+    - nav2_navigate_to_pose_action_bt_node
+    - nav2_remove_passed_goals_action_bt_node
+    - nav2_planner_selector_bt_node
+    - nav2_controller_selector_bt_node
+    - nav2_goal_checker_selector_bt_node
+
+-------------------------------------
+# Start the amr-navigation node​
+-------------------------------------
+
+ros2 launch nav2_bringup bringup_launch.py params_file:=/home/amr01/workspace/robofun-1.0/platform/scuttle/ROS2/src/generic_robot_driver/config/nav2_eiforamr_params.yml map:=/home/amr01/workspace/robofun-1.0/SmartClassroom.yaml use_sim_time:=false namespace:=/amr33 use_namespace:=True
+
+-------------------------------------
+​

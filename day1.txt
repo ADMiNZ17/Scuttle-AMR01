@@ -1,0 +1,268 @@
+Day 1 - Prepare Target System
+-------------------------------------
+1. Install ROS2 on Host
+-------------------------------------
+# Install the kernel
+-------------------------------------
+
+sudo apt install linux-image-5.15.0-1049-intel-iotg linux-modules-extra-5.15.0-1049-intel-iotg
+
+-------------------------------------
+# Modify GRUB boot options
+-------------------------------------
+
+sudo sed -i 's/GRUB_DEFAULT=.*/GRUB_DEFAULT="Advanced options for Ubuntu>Ubuntu, with Linux 5.15.0-1049-intel-iotg"/g' /etc/default/grub && sudo update-grub
+
+-------------------------------------
+# Reboot system
+-------------------------------------
+
+sudo reboot
+
+-------------------------------------
+
+uname -r
+
+-------------------------------------
+2. Robotic Operating System (ROS2)​
+​-------------------------------------
+# List ROS2 nodes
+-------------------------------------
+
+ros2 node list​
+
+-------------------------------------
+
+ros2 node info <node_name>​
+
+-------------------------------------
+# Displays a list of active topics
+-------------------------------------
+
+ros2 topic list​
+
+-------------------------------------
+
+ros2 topic info <topic_name>​
+
+-------------------------------------
+
+ros2 topic hz <topic_name>​
+
+-------------------------------------
+
+ros2 topic echo <topic_name>​
+
+-------------------------------------
+# List available ROS2 service
+-------------------------------------
+
+ros2 service list​
+
+-------------------------------------
+# Create a new workspace and compile a ROS2 applications​
+-------------------------------------
+
+mkdir -p ~/ros2_ws/src​
+cd ~/ros2_ws/​
+colcon build --symlink-install
+
+-------------------------------------
+# Source the workspace environment
+-------------------------------------
+
+cd ~/ros2_ws/ ​
+source install/setup.bash​
+
+-------------------------------------
+# Run the ROS2 node​
+-------------------------------------
+
+ros2 run <package_name> <node_name> ​
+
+-------------------------------------
+
+ros2 run demo_nodes_cpp talker​
+
+-------------------------------------
+3. Download and install Robotics SDK 2.1 ​
+-------------------------------------
+# AMR SDK 
+-------------------------------------
+
+https://edgesoftware.intel.com/edge_insights_for_amr
+
+-------------------------------------
+# Install Intel® Robotics SDK Deb packages​
+-------------------------------------
+
+sudo apt update​
+sudo apt install ros-humble-robotics-sdk​
+
+-------------------------------------
+# (Optional) install complete package​
+-------------------------------------
+
+sudo apt install ros-humble-robotics-sdk-complete
+
+-------------------------------------
+4. Robot Software Setup
+-------------------------------------
+# Create workspace directory
+-------------------------------------
+
+mkdir ~/workspace
+
+-------------------------------------
+# Go to ~/workspace and unzip folder
+-------------------------------------
+
+cd ~/workspace​
+unzip robofun-1.0.zip​​​
+
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/​
+
+-------------------------------------
+# Install dependency
+-------------------------------------
+
+chmod 777 install_dependencies.sh​
+gedit install_dependencies.sh
+
+-------------------------------------
+
+sudo ./install_dependencies.sh​
+
+-------------------------------------
+# Reboot system
+-------------------------------------
+
+sudo reboot​
+
+-------------------------------------
+# Go to .../platform/scuttle directory 
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/platform/scuttle/​
+ls
+
+-------------------------------------
+# Run the command inside
+-------------------------------------
+
+sudo bash ./hardware-preq.sh ​
+
+-------------------------------------
+# Check the driver directory
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/platform/scuttle/driver/​
+ls
+
+-------------------------------------
+# Install for flash
+-------------------------------------
+
+sudo apt install libusb-dev gcc-avr avr-libc​
+chmod 777 flash.sh​
+sudo ./flash.sh 
+
+-------------------------------------
+# Check i2c bus 1st step
+-------------------------------------
+
+sudo i2cdetect -l​
+
+-------------------------------------
+
+sudo chmod 777 /dev/i2c-12​
+
+-------------------------------------
+# Check if the encoders are connected
+-------------------------------------
+
+sudo i2cdetect -r -y <i2c_bus_id> ​
+
+-------------------------------------
+# Go to standalone directory  before docker up 
+-------------------------------------
+
+cd ~/workspace/robofun-1.0/platform/scuttle/standalone/
+
+-------------------------------------
+# Open the docker-compose.yml​
+-------------------------------------
+
+gedit docker-compose.yml​
+
+-------------------------------------
+# Build docker-compose.yml 
+-------------------------------------
+
+​docker compose -f docker-compose.yml build
+
+-------------------------------------
+# Only if you see the error
+-------------------------------------
+
+sudo chown -R $USER:$USER /home/$USER/.docker​
+sudo usermod -aG docker $USER
+sudo reboot
+
+-------------------------------------
+# Start the package
+-------------------------------------
+
+docker compose -f docker-compose.yml up​
+
+(for starting robot)
+-------------------------------------
+# To stop the package
+-------------------------------------
+
+docker compose -f docker-compose.yml down​
+
+(for shutting down robot)
+-------------------------------------
+# Enter the amr.platform.scuttle docker
+-------------------------------------
+
+docker exec -it amr.platform.scuttle bash ​
+
+-------------------------------------
+# Check the ROS_DOMAIN_ID
+-------------------------------------
+
+env | grep ROS​
+
+-------------------------------------
+# If the ROS_DOMAIN_ID is incorrect
+-------------------------------------
+
+export ROS_DOMAIN_ID=<ROBOT_DOMAIN_ID>​
+
+-------------------------------------
+
+source install/setup.bash​
+source /opt/ros/humble/setup.bash
+
+-------------------------------------
+
+ros2 topic list​
+
+-------------------------------------
+
+# YDLidar RVIS test command (Visit: https://github.com/YDLIDAR/ydlidar_ros2_driver/tree/humble)
+ros2 launch ydlidar_ros2_driver ydlidar_launch_view.py
+
+# Update Intel Iris Xe graphic driver:
+sudo apt install -y --install-recommends linux-generic-hwe-22.04 linux-firmware mesa-utils libgl1-mesa-dri libegl-mesa0 xserver-xorg-video-intel
+
+# Advanced SSH (Launch a synchronous terminal session on remote device)
+tmux kill-server; tmux new-session -d -s robot -n '0'; tmux new-window -t robot -n '1'; tmux new-window -t robot -n '2'; tmux new-window -t robot -n '3'; tmux new-window -t robot -n '4'; DISPLAY=:0 XAUTHORITY=/run/user/$(id -u)/gdm/Xauthority DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus gnome-terminal -- tmux attach -t robot; tmux attach -t robot; echo "Press Ctrl+B, release, then press 2 jumps to window 2"
+
+# Terminate all tmux windows
+tmux kill-server
+-------------------------------------

@@ -1,0 +1,238 @@
+<?xml version="1.0" ?>
+<robot name="scuttle" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<xacro:arg name="use_nominal_extrinsics" default="false" />
+
+<xacro:include filename="$(find generic_robot_driver)/urdf/materials.xacro" />
+<!-- <xacro:include filename="$(find generic_robot_driver)/urdf/scuttle.trans" /> -->
+<!-- <xacro:include filename="$(find generic_robot_driver)/urdf/scuttle.gazebo" /> -->
+<xacro:include filename="$(find realsense2_description)/urdf/_d435i.urdf.xacro"/>
+
+<link name="base_footprint"></link>
+
+<link name="base_link">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.017633 0.000105 0.2182"/> 
+    <mass value="14.847352"/>
+    <inertia ixx="0.630706" ixy="4.9e-05" ixz="-0.000124" iyy="0.552794" iyz="0.038163" izz="0.52187"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 1.570796" xyz="0.12 0 0"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/base_link_rotate.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 1.570796" xyz="0.12 0 0"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/base_link_collision_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="l_wheel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="4.23e-07 0.000159 0.0"/>
+    <mass value="0.283839"/>
+    <inertia ixx="0.000205" ixy="0.0" ixz="0.0" iyy="0.000352" iyz="0.0" izz="0.000205"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.21235 -0.0 -0.04175"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/l_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="blue"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.21235 -0.0 -0.04175"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/l_wheel_collision_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="r_wheel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="4.23e-07 -0.000155 0.0"/>
+    <mass value="0.283807"/>
+    <inertia ixx="0.000205" ixy="0.0" ixz="0.0" iyy="0.000352" iyz="0.0" izz="0.000205"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.21215 0.0 -0.04175"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/r_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="blue"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.21215 0.0 -0.04175"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/r_wheel_collision_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lidar_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-6.45e-07 -3.81e-07 -0.0175"/>
+    <mass value="0.142776"/>
+    <inertia ixx="5.8e-05" ixy="0.0" ixz="0.0" iyy="5.8e-05" iyz="0.0" izz="8.7e-05"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0 0.0275 -0.1096"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/lidar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="gray"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0 0.0275 -0.1096"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/lidar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="r_caster_swivel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.01565 6.26e-08 -0.0327"/>
+    <mass value="0.577277"/>
+    <inertia ixx="0.000356" ixy="0.0" ixz="0.0" iyy="0.000449" iyz="0.0" izz="0.000187"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.119279 0.254415 -0.059282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/r_caster_swivel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.119279 0.254415 -0.059282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/r_caster_swivel_collision_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="l_caster_swivel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.01565 1.26e-07 -0.0327"/>
+    <mass value="0.577277"/>
+    <inertia ixx="0.000356" ixy="0.0" ixz="0.0" iyy="0.000449" iyz="0.0" izz="0.000187"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.119015 0.254415 -0.059282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/l_caster_swivel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.119015 0.254415 -0.059282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/l_caster_swivel_collision_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="l_caster_wheel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.0160002016389222 -1.6368916427866864e-07 -7.02880924990934e-08"/>
+    <mass value="0.03841110590847018"/>
+    <inertia ixx="1.2e-05" ixy="0.0" ixz="-0.0" iyy="7e-06" iyz="0.0" izz="7e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.101223 0.230415 -0.025282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/l_caster_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="blue"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.101223 0.230415 -0.025282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/l_caster_wheel_collision_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="r_caster_wheel_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.016000038883518655 -1.6368920854881175e-07 -7.028809271419911e-08"/>
+    <mass value="0.03841110590847031"/>
+    <inertia ixx="1.2e-05" ixy="-0.0" ixz="0.0" iyy="7e-06" iyz="0.0" izz="7e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.105071 0.230415 -0.025282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/r_caster_wheel_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="blue"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.105071 0.230415 -0.025282"/>
+    <geometry>
+      <mesh filename="package://generic_robot_driver/meshes/r_caster_wheel_collision_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="base_link_joint" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+  <parent link="base_footprint"/>
+  <child link="base_link"/>
+</joint>
+
+<joint name="l_wheel_joint" type="continuous">
+  <origin rpy="0 0 1.570796" xyz="0.0891 0.1937 0.05"/>
+  <parent link="base_link"/>
+  <child link="l_wheel_1"/>
+  <axis xyz="1.0 -0.0 0.0"/>
+</joint>
+
+<joint name="r_wheel_joint" type="continuous">
+  <origin rpy="0 0 1.570796" xyz="0.0891 -0.1943 0.05"/>
+  <parent link="base_link"/>
+  <child link="r_wheel_1"/>
+  <axis xyz="1.0 0.0 -0.0"/>
+</joint>
+
+<joint name="lidar" type="fixed">
+  <origin rpy="0 0 0" xyz="0.1516 -0.0001 0.1641"/>
+  <parent link="base_link"/>
+  <child link="lidar_1"/>
+</joint>
+
+<joint name="r_caster_swivel_joint" type="continuous">
+  <origin rpy="0 0 1.570796" xyz="-0.1052 -0.1367 0.0721"/>
+  <parent link="base_link"/>
+  <child link="r_caster_swivel_1"/>
+  <axis xyz="0.0 0.0 1.0"/>
+</joint>
+
+<joint name="l_caster_swivel_joint" type="continuous">
+  <origin rpy="0 0 1.570796" xyz="-0.1052 0.1365 0.0721"/>
+  <parent link="base_link"/>
+  <child link="l_caster_swivel_1"/>
+  <axis xyz="0.0 -0.0 1.0"/>
+</joint>
+
+<joint name="r_caster_wheel_joint" type="continuous">
+  <origin rpy="0 0 0" xyz="-0.017792 0.024 -0.034"/>
+  <parent link="l_caster_swivel_1"/>
+  <child link="l_caster_wheel_1"/>
+  <axis xyz="1.0 0.0 -0.0"/>
+</joint>
+
+<joint name="l_caster_wheel_joint" type="continuous">
+  <origin rpy="0 0 0" xyz="0.014208 0.024 -0.034"/>
+  <parent link="r_caster_swivel_1"/>
+  <child link="r_caster_wheel_1"/>
+  <axis xyz="-1.0 -0.0 0.0"/>
+</joint>
+
+<xacro:sensor_d435i parent="base_link" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+    <origin rpy="0 0 0" xyz="0.1599 -0.0021 0.5658" />
+</xacro:sensor_d435i>
+
+</robot>

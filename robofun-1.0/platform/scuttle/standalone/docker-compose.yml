@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  amr-platform-scuttle:
+    platform: linux/amd64
+    build:
+      context: ../
+      dockerfile: ./standalone/Dockerfile
+      args:
+      - ROBOT_VERSION=2023.1
+    container_name: amr.platform.scuttle
+    image: amr.platform.scuttle:2023.1
+    restart: "no"
+    ipc: host
+    pid: host
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - /dev:/dev:rw
+    environment:
+      - ROBOT_BASE=scuttle
+      - ROBOT_BASE_TYPE=devkit
+      - ROS_DOMAIN_ID=33
+      - ROBOT_NAMESPACE=amr01
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    command: "ros2 launch generic_robot_driver robot_bringup.launch.py align_depth:=true"
+  
+  amr-platform-scuttle-teleop:
+    platform: linux/amd64
+    container_name: amr.platform.scuttle.teleop
+    image: amr.platform.scuttle:2023.1
+    restart: "no"
+    ipc: host
+    pid: host
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - /dev:/dev:rw
+    environment:
+      - ROBOT_BASE=scuttle
+      - ROBOT_BASE_TYPE=devkit
+      - ROS_DOMAIN_ID=33
+      - ROBOT_NAMESPACE=amr01
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    command: "ros2 launch generic_robot_driver robot_teleop.launch.py"

@@ -1,0 +1,5 @@
+generic_robot_driver:
+  ros__parameters:
+    i2c_bus_id: 2
+    enable_tf_pub: True
+    enable_jointstate_pub: True

@@ -1,0 +1,4 @@
+python-on-whales==0.53.0
+#prettytable==3.5.0
+pyyaml==5.4.1
+schema==0.7.5

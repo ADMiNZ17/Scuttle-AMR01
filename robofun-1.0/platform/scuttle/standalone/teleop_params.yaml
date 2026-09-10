@@ -1,0 +1,9 @@
+teleop_twist_joy_node:
+  ros__parameters:
+    enable_button: 2         # x (or test another button if needed)
+    enable_turbo_button: 6   # R1 (optional)
+    axis_linear.x: 1         # Left stick vertical#4   
+    axis_angular.yaw: 0      # Left stick horizontal
+    scale_linear.x: 0.5
+    scale_angular.yaw: 1.0
+    require_enable_button: true
