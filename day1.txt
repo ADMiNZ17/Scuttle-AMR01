@@ -97,8 +97,57 @@ https://edgesoftware.intel.com/edge_insights_for_amr
 -------------------------------------
 
 sudo apt update​
-sudo apt install ros-humble-robotics-sdk​
+sudo apt install ros-humble-robotics-sdk
 
+# **If encounter ERROR** (E: Unable to locate package ros-humble-robotics-sdk) by adding component(s) 'universe' to all repositories.
+# 1. Enable required Ubuntu repositories and tools
+sudo apt update && sudo apt install -y software-properties-common curl gnupg lsb-release
+sudo add-apt-repository main
+sudo add-apt-repository universe
+sudo add-apt-repository restricted
+sudo add-apt-repository multiverse
+
+# 2. Add the official ROS 2 GPG key
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+# 3. Add the ROS 2 repository to APT sources
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list
+
+# 4. Update index and install ROS 2 Desktop
+sudo apt update
+sudo apt install -y ros-humble-desktop
+
+-------------------------------------
+# Troubleshooting & Fixes
+-------------------------------------
+
+# **ERROR FIX 1: "Unable to locate package"**
+# Occurs when ROS 2 repos are missing. Execute steps 1 to 4 above in order.
+
+# **ERROR FIX 2: "Unmet dependencies / Held broken packages"**
+# Occurs when system libraries (python3, libpulse, libusb) are out of sync with security updates.
+# Overwrite sources to include jammy-updates & jammy-security, then upgrade:
+
+sudo bash -c 'cat <<EOF > /etc/apt/sources.list
+deb http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
+EOF'
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt --fix-broken install
+sudo apt install -y ros-humble-desktop
+
+-------------------------------------
+# Intel® Robotics SDK (Hardware Setup)
+-------------------------------------
+
+# Note: Intel Robotics SDK is installed via the workspace hardware script, not APT.
+cd ~/workspace/robofun-1.0/platform/scuttle/
+bash hardware-preq.sh
+-------------------------------------
 -------------------------------------
 # (Optional) install complete package​
 -------------------------------------
