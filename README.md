@@ -18,8 +18,8 @@ The training environment relies on hardcoded paths pointing to your user's works
 3. Clone this repository (or unzip the provided package) directly into this folder so that the resulting working path is exactly `~/workspace/robofun-1.0/`:
    unzip robofun-1.0.zip
    ```bash
-   # Create a working directory (/workspace/) and clone it as (/workspace/robofun-1.0)
-   git clone https://github.com/ADMiNZ17/Scuttle-AMR01.git robofun-1.0
+   # Create a working directory (/home) and clone it as (/workspace/robofun-1.0/.....)
+   git clone https://github.com/ADMiNZ17/Scuttle-AMR01.git workspace
 
 -------------------------------------
 2. Environment Variables & Naming Scheme
